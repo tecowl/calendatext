@@ -26,3 +26,12 @@ func (c *Calendar) Dates() Dates {
 	})
 	return r
 }
+
+func (c *Calendar) ParseText(s string) error {
+	parser := newTextParser(c.Period.Start)
+	if err := parser.Run(s); err != nil {
+		return err
+	}
+	c.Patterns = parser.Patterns.Reverse()
+	return nil
+}

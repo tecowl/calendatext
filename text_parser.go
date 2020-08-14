@@ -7,13 +7,20 @@ import (
 	"github.com/pkg/errors"
 )
 
+type BuildMatcher func(s string) (DateMatcher, error)
+
 type textParser struct {
-	currentDate Date
-	Patterns    Patterns
+	currentDate     Date
+	Patterns        Patterns
+	matcherBuilders []BuildMatcher
 }
 
 func newTextParser(d Date) *textParser {
-	return &textParser{currentDate: d, Patterns: Patterns{}}
+	return &textParser{
+		currentDate:     d,
+		Patterns:        Patterns{},
+		matcherBuilders: newMatcherBuilders(),
+	}
 }
 
 func (tp *textParser) Run(s string) error {
@@ -65,7 +72,7 @@ func (tp *textParser) parseLine(line string) (*Pattern, error) {
 }
 
 func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
-	for _, build := range matcherBuilders {
+	for _, build := range tp.matcherBuilders {
 		m, err := build(body)
 		if err != nil {
 			return nil, err
@@ -77,45 +84,45 @@ func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
 	return nil, errors.Errorf("No build function found for %q", body)
 }
 
-type BuildMatcher func(s string) (DateMatcher, error)
-
 var (
 	slashDateRE   = regexp.MustCompile(`\A\d+/\d+/\d+\z`)
 	slashPeriodRE = regexp.MustCompile(`\A\d+/\d+/\d+\s*-\s*\d+/\d+/\d+\z`)
 )
 
-var matcherBuilders = []BuildMatcher{
-	func(s string) (DateMatcher, error) {
-		if s != "平日" {
-			return nil, nil
-		}
-		return Weekdays{Monday, Tuesday, Wednesday, Thursday, Friday}, nil
-	},
+func newMatcherBuilders() []BuildMatcher {
+	return []BuildMatcher{
+		func(s string) (DateMatcher, error) {
+			if s != "平日" {
+				return nil, nil
+			}
+			return Weekdays{Monday, Tuesday, Wednesday, Thursday, Friday}, nil
+		},
 
-	func(s string) (DateMatcher, error) {
-		if !slashDateRE.MatchString(s) {
-			return nil, nil
-		}
-		return ParseDateWith(strings.TrimSpace(s), "/")
-	},
+		func(s string) (DateMatcher, error) {
+			if !slashDateRE.MatchString(s) {
+				return nil, nil
+			}
+			return ParseDateWith(strings.TrimSpace(s), "/")
+		},
 
-	func(s string) (DateMatcher, error) {
-		if !slashPeriodRE.MatchString(s) {
-			return nil, nil
-		}
-		parts := strings.SplitN(s, "-", 2)
-		if len(parts) < 2 {
-			return nil, errors.Errorf("Failed to split string as Period: %q", s)
-		}
+		func(s string) (DateMatcher, error) {
+			if !slashPeriodRE.MatchString(s) {
+				return nil, nil
+			}
+			parts := strings.SplitN(s, "-", 2)
+			if len(parts) < 2 {
+				return nil, errors.Errorf("Failed to split string as Period: %q", s)
+			}
 
-		st, err := ParseDateWith(strings.TrimSpace(parts[0]), "/")
-		if err != nil {
-			return nil, err
-		}
-		ed, err := ParseDateWith(strings.TrimSpace(parts[1]), "/")
-		if err != nil {
-			return nil, err
-		}
-		return NewPeriod(*st, *ed), nil
-	},
+			st, err := ParseDateWith(strings.TrimSpace(parts[0]), "/")
+			if err != nil {
+				return nil, err
+			}
+			ed, err := ParseDateWith(strings.TrimSpace(parts[1]), "/")
+			if err != nil {
+				return nil, err
+			}
+			return NewPeriod(*st, *ed), nil
+		},
+	}
 }

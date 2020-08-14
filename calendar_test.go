@@ -68,6 +68,18 @@ func TestCalendarParse(t *testing.T) {
 - 08/17-08/21 : 夏季休暇
 + 08/22 : 出勤日
 `,
+		"day only": `
++ 平日 : 通常営業日
+- 10 : 山の日
+- 17-21 : 夏季休暇
++ 22 : 出勤日
+`,
+		"complicated": `
++ 平日 : 通常営業日
+- 08/10 : 山の日
+-    17-21 : 夏季休暇
++    22 : 出勤日
+`,
 	}
 
 	for name, text := range texts {

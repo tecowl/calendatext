@@ -83,11 +83,8 @@ func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
 }
 
 var (
-	slashDateRE     = regexp.MustCompile(`\A\d+/\d+/\d+\z`)
-	slashDateREmmdd = regexp.MustCompile(`\A\d+/\d+\z`)
-
-	slashPeriodRE     = regexp.MustCompile(`\A\d+/\d+/\d+\s*-\s*\d+/\d+/\d+\z`)
-	slashPeriodREmmdd = regexp.MustCompile(`\A\d+/\d+\s*-\s*\d+/\d+\z`)
+	slashDateRE   = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\z`)
+	slashPeriodRE = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\s*-\s*(?:\d+/)?(?:\d+/)?\d+\z`)
 )
 
 func newMatcherBuilders(date *Date) []BuildMatcher {
@@ -103,14 +100,14 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 		},
 
 		func(s string) (DateMatcher, error) {
-			if !slashDateRE.MatchString(s) && !slashDateREmmdd.MatchString(s) {
+			if !slashDateRE.MatchString(s) {
 				return nil, nil
 			}
 			return contextualParser.Parse(strings.TrimSpace(s))
 		},
 
 		func(s string) (DateMatcher, error) {
-			if !slashPeriodRE.MatchString(s) && !slashPeriodREmmdd.MatchString(s) {
+			if !slashPeriodRE.MatchString(s) {
 				return nil, nil
 			}
 			parts := strings.SplitN(s, "-", 2)

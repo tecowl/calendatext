@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// RFC3339 full-time
+// RFC3339 full-date
 // See documents about RFC3339
 //    https://www.ietf.org/rfc/rfc3339.txt
 //    https://medium.com/easyread/understanding-about-rfc-3339-for-datetime-formatting-in-software-engineering-940aa5d5f68a

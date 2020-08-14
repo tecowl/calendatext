@@ -10,16 +10,14 @@ import (
 type BuildMatcher func(s string) (DateMatcher, error)
 
 type textParser struct {
-	currentDate     Date
 	Patterns        Patterns
 	matcherBuilders []BuildMatcher
 }
 
 func newTextParser(d Date) *textParser {
 	return &textParser{
-		currentDate:     d,
 		Patterns:        Patterns{},
-		matcherBuilders: newMatcherBuilders(),
+		matcherBuilders: newMatcherBuilders(&d),
 	}
 }
 
@@ -85,11 +83,17 @@ func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
 }
 
 var (
-	slashDateRE   = regexp.MustCompile(`\A\d+/\d+/\d+\z`)
-	slashPeriodRE = regexp.MustCompile(`\A\d+/\d+/\d+\s*-\s*\d+/\d+/\d+\z`)
+	slashDateRE     = regexp.MustCompile(`\A\d+/\d+/\d+\z`)
+	slashDateREmmdd = regexp.MustCompile(`\A\d+/\d+\z`)
+
+	slashPeriodRE     = regexp.MustCompile(`\A\d+/\d+/\d+\s*-\s*\d+/\d+/\d+\z`)
+	slashPeriodREmmdd = regexp.MustCompile(`\A\d+/\d+\s*-\s*\d+/\d+\z`)
 )
 
-func newMatcherBuilders() []BuildMatcher {
+func newMatcherBuilders(date *Date) []BuildMatcher {
+	delimiter := "/"
+	contextualParser := NewContextualDateParser(delimiter, date)
+
 	return []BuildMatcher{
 		func(s string) (DateMatcher, error) {
 			if s != "平日" {
@@ -99,14 +103,14 @@ func newMatcherBuilders() []BuildMatcher {
 		},
 
 		func(s string) (DateMatcher, error) {
-			if !slashDateRE.MatchString(s) {
+			if !slashDateRE.MatchString(s) && !slashDateREmmdd.MatchString(s) {
 				return nil, nil
 			}
-			return ParseDateWith(strings.TrimSpace(s), "/")
+			return contextualParser.Parse(strings.TrimSpace(s))
 		},
 
 		func(s string) (DateMatcher, error) {
-			if !slashPeriodRE.MatchString(s) {
+			if !slashPeriodRE.MatchString(s) && !slashPeriodREmmdd.MatchString(s) {
 				return nil, nil
 			}
 			parts := strings.SplitN(s, "-", 2)
@@ -114,11 +118,11 @@ func newMatcherBuilders() []BuildMatcher {
 				return nil, errors.Errorf("Failed to split string as Period: %q", s)
 			}
 
-			st, err := ParseDateWith(strings.TrimSpace(parts[0]), "/")
+			st, err := contextualParser.Parse(strings.TrimSpace(parts[0]))
 			if err != nil {
 				return nil, err
 			}
-			ed, err := ParseDateWith(strings.TrimSpace(parts[1]), "/")
+			ed, err := contextualParser.Parse(strings.TrimSpace(parts[1]))
 			if err != nil {
 				return nil, err
 			}

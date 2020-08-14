@@ -21,6 +21,11 @@ type Date struct {
 	d int
 }
 
+func Today() *Date {
+	t := time.Now()
+	return NewDate(t.Year(), t.Month(), t.Day())
+}
+
 func ParseDateWith(str string, delimiter string) (*Date, error) {
 	parts := strings.SplitN(str, delimiter, 3)
 	if len(parts) < 3 {
@@ -52,6 +57,18 @@ func (d Date) Time() time.Time {
 
 func (d Date) String() string {
 	return d.Time().Format(DateFormat)
+}
+
+func (d Date) Year() int {
+	return d.y
+}
+
+func (d Date) Month() time.Month {
+	return d.m
+}
+
+func (d Date) Day() int {
+	return d.d
 }
 
 func (d Date) Equal(other *Date) bool {

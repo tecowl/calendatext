@@ -9,3 +9,12 @@ func (s Dates) Strings() []string {
 	}
 	return r
 }
+
+func (s Dates) Match(d *Date) bool {
+	for _, i := range s {
+		if i.Equal(d) {
+			return true
+		}
+	}
+	return false
+}

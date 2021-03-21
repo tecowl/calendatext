@@ -1,9 +1,10 @@
 package calendatext_test
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/tecowl/calendatext"
-	"testing"
 )
 
 // ----- 2020-12 ------  ----- 2021-01 ------
@@ -76,4 +77,24 @@ func TestCalendar(t *testing.T) {
 		cal.Dates().Strings(),
 	)
 
+}
+
+func TestMatch(t *testing.T) {
+	parseDate := func(s string) *calendatext.Date {
+		r, err := calendatext.ParseDateWith(s, "-")
+		assert.NoError(t, err)
+		return r
+	}
+	calendarBase := parseDate("2020-12-01")
+
+	match := func(date string) bool {
+		d := parseDate(date)
+		r, err := calendatext.Match(text, *calendarBase, *d, false)
+		assert.NoError(t, err)
+		return r
+	}
+
+	assert.False(t, match("2021-01-10"))
+	assert.False(t, match("2021-01-11"))
+	assert.True(t, match("2021-01-12"))
 }

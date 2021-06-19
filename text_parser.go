@@ -2,6 +2,7 @@ package calendatext
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -86,6 +87,7 @@ var (
 	slashDateRE   = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\z`)
 	slashPeriodRE = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\s*-\s*(?:\d+/)?(?:\d+/)?\d+\z`)
 	weeklyRE      = regexp.MustCompile(`\A毎週`)
+	monthlyDayRE  = regexp.MustCompile(`\A毎月(\d+)日`)
 )
 
 func newMatcherBuilders(date *Date) []BuildMatcher {
@@ -115,6 +117,22 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 				return nil, nil
 			}
 			return r, nil
+		},
+
+		// 毎月***
+		func(s string) (DateMatcher, error) {
+			m := monthlyDayRE.FindAllStringSubmatch(s, -1)
+			if len(m) < 1 {
+				return nil, nil
+			}
+			if len(m[0]) < 2 {
+				return nil, errors.Errorf("something wrong to parse %q", s)
+			}
+			d, err := strconv.ParseInt(m[0][1], 10, 10)
+			if err != nil {
+				return nil, err
+			}
+			return MonthlyDay(d), nil
 		},
 
 		func(s string) (DateMatcher, error) {

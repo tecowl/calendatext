@@ -22,3 +22,13 @@ func (wd Weekday) Match(d *Date) bool {
 	}
 	return time.Weekday(wd) == d.Time().Weekday()
 }
+
+var WeekdayNameMap = map[Weekday]string{
+	Sunday:    "日",
+	Monday:    "月",
+	Tuesday:   "火",
+	Wednesday: "水",
+	Thursday:  "木",
+	Friday:    "金",
+	Saturday:  "土",
+}

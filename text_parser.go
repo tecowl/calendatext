@@ -85,6 +85,7 @@ func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
 var (
 	slashDateRE   = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\z`)
 	slashPeriodRE = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\s*-\s*(?:\d+/)?(?:\d+/)?\d+\z`)
+	weeklyRE      = regexp.MustCompile(`\A毎週`)
 )
 
 func newMatcherBuilders(date *Date) []BuildMatcher {
@@ -97,6 +98,23 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 				return nil, nil
 			}
 			return Weekdays{Monday, Tuesday, Wednesday, Thursday, Friday}, nil
+		},
+
+		// 毎週***
+		func(s string) (DateMatcher, error) {
+			if !weeklyRE.MatchString(s) {
+				return nil, nil
+			}
+			r := Weekdays{}
+			for d, ptn := range WeekdayNameMap {
+				if strings.Contains(s, ptn) {
+					r = append(r, d)
+				}
+			}
+			if len(r) == 0 {
+				return nil, nil
+			}
+			return r, nil
 		},
 
 		func(s string) (DateMatcher, error) {

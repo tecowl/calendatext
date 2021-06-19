@@ -78,6 +78,20 @@ func (d Date) Equal(other *Date) bool {
 	return d.y == other.y && d.m == other.m && d.d == other.d
 }
 
+func (d Date) Weekday() Weekday {
+	return Weekday(d.Time().Weekday())
+}
+
+func (d Date) MonthlyWeekNum() int {
+	r := d.Day() / 7
+	q := d.Day() % 7
+	if q == 0 {
+		return r
+	} else {
+		return r + 1
+	}
+}
+
 // Implement DateMatcher interface
 func (d Date) Match(other *Date) bool {
 	return d.Equal(other)

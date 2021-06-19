@@ -7,7 +7,7 @@ import (
 type Weekday time.Weekday
 
 const (
-	Sumday    = Weekday(time.Sunday)
+	Sunday    = Weekday(time.Sunday)
 	Monday    = Weekday(time.Monday)
 	Tuesday   = Weekday(time.Tuesday)
 	Wednesday = Weekday(time.Wednesday)

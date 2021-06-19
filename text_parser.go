@@ -84,10 +84,10 @@ func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
 }
 
 var (
-	slashDateRE   = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\z`)
-	slashPeriodRE = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\s*-\s*(?:\d+/)?(?:\d+/)?\d+\z`)
-	weeklyRE      = regexp.MustCompile(`\A毎週`)
-	monthlyDayRE  = regexp.MustCompile(`\A毎月(\d+)日`)
+	slashDateRE      = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\z`)
+	slashPeriodRE    = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\s*-\s*(?:\d+/)?(?:\d+/)?\d+\z`)
+	weeklyRE         = regexp.MustCompile(`\A毎週`)
+	monthlyDayRE     = regexp.MustCompile(`\A毎月[^\d]*(\d+)日`)
 	monthlyWeekdayRE = regexp.MustCompile(`\A毎月.*第(\d)(.+)`)
 )
 

@@ -84,3 +84,29 @@ func TestCompare(t *testing.T) {
 	t.Run("compare with prev month", subTestForPrev(d, d.PrevMonth()))
 	t.Run("compare with prev year", subTestForPrev(d, d.PrevYear()))
 }
+
+func TestDateMonthlyWeekNum(t *testing.T) {
+	// ----- 2020-08 ------
+	// S  M  T  W  T  F  S
+	//                    1
+	//  2  3  4  5  6  7  8
+	//  9 10 11 12 13 14 15
+	// 16 17 18 19 20 21 22
+	// 23 24 25 26 27 28 29
+	// 30 31
+	for _, d := range []int{1, 2, 3, 4, 5, 6, 7} {
+		assert.Equal(t, 1, NewDate(2020, 8, d).MonthlyWeekNum())
+	}
+	for _, d := range []int{8, 9, 10, 11, 12, 13, 14} {
+		assert.Equal(t, 2, NewDate(2020, 8, d).MonthlyWeekNum())
+	}
+	for _, d := range []int{15, 16, 17, 18, 19, 20, 21} {
+		assert.Equal(t, 3, NewDate(2020, 8, d).MonthlyWeekNum())
+	}
+	for _, d := range []int{22, 23, 24, 25, 26, 27, 28} {
+		assert.Equal(t, 4, NewDate(2020, 8, d).MonthlyWeekNum())
+	}
+	for _, d := range []int{29, 30, 31} {
+		assert.Equal(t, 5, NewDate(2020, 8, d).MonthlyWeekNum())
+	}
+}

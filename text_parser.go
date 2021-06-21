@@ -2,6 +2,7 @@ package calendatext
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -83,8 +84,11 @@ func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
 }
 
 var (
-	slashDateRE   = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\z`)
-	slashPeriodRE = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\s*-\s*(?:\d+/)?(?:\d+/)?\d+\z`)
+	slashDateRE      = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\z`)
+	slashPeriodRE    = regexp.MustCompile(`\A(?:\d+/)?(?:\d+/)?\d+\s*-\s*(?:\d+/)?(?:\d+/)?\d+\z`)
+	weeklyRE         = regexp.MustCompile(`\A毎週`)
+	monthlyDayRE     = regexp.MustCompile(`\A毎月[^\d]*(\d+)日`)
+	monthlyWeekdayRE = regexp.MustCompile(`\A毎月.*第(\d)(.+)`)
 )
 
 func newMatcherBuilders(date *Date) []BuildMatcher {
@@ -97,6 +101,59 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 				return nil, nil
 			}
 			return Weekdays{Monday, Tuesday, Wednesday, Thursday, Friday}, nil
+		},
+
+		// 毎週***
+		func(s string) (DateMatcher, error) {
+			if !weeklyRE.MatchString(s) {
+				return nil, nil
+			}
+			r := Weekdays{}
+			for d, c := range WeekdayNameMap {
+				if strings.ContainsRune(s, c) {
+					r = append(r, d)
+				}
+			}
+			if len(r) == 0 {
+				return nil, nil
+			}
+			return r, nil
+		},
+
+		// 毎月***
+		func(s string) (DateMatcher, error) {
+			m := monthlyDayRE.FindAllStringSubmatch(s, -1)
+			if len(m) < 1 {
+				return nil, nil
+			}
+			if len(m[0]) < 2 {
+				return nil, errors.Errorf("something wrong to parse %q", s)
+			}
+			d, err := strconv.ParseInt(m[0][1], 10, 10)
+			if err != nil {
+				return nil, err
+			}
+			return MonthlyDay(d), nil
+		},
+
+		// 毎月第N***
+		func(s string) (DateMatcher, error) {
+			m := monthlyWeekdayRE.FindAllStringSubmatch(s, -1)
+			if len(m) < 1 {
+				return nil, nil
+			}
+			if len(m[0]) < 3 {
+				return nil, errors.Errorf("something wrong to parse %q", s)
+			}
+			n, err := strconv.Atoi(m[0][1])
+			if err != nil {
+				return nil, err
+			}
+			wd, err := ParseWeekdayName(m[0][2])
+			if err != nil {
+				return nil, err
+			}
+			return &MonthlyWeekday{Num: n, Weekday: *wd}, nil
 		},
 
 		func(s string) (DateMatcher, error) {

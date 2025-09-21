@@ -70,7 +70,7 @@ func (tp *textParser) parseLine(line string) (*Pattern, error) {
 	}, nil
 }
 
-func (tp *textParser) parseMatcher(body string) (DateMatcher, error) {
+func (tp *textParser) parseMatcher(body string) (DateMatcher, error) { // nolint:ireturn
 	for _, build := range tp.matcherBuilders {
 		m, err := build(body)
 		if err != nil {

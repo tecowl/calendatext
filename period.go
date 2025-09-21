@@ -17,7 +17,7 @@ func (pd *Period) Include(d *Date) bool {
 }
 
 // Implement DateMatcher interface
-func (pd Period) Match(other *Date) bool {
+func (pd *Period) Match(other *Date) bool {
 	return pd.Include(other)
 }
 

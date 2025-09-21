@@ -18,6 +18,8 @@ const (
 	Saturday  = Weekday(time.Saturday)
 )
 
+const weekdays = 7
+
 func (wd Weekday) Match(d *Date) bool {
 	if d == nil {
 		return false

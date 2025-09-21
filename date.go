@@ -84,8 +84,8 @@ func (d Date) Weekday() Weekday {
 }
 
 func (d Date) MonthlyWeekNum() int {
-	r := d.Day() / 7
-	q := d.Day() % 7
+	r := d.Day() / weekdays
+	q := d.Day() % weekdays
 	if q == 0 {
 		return r
 	} else {
@@ -166,7 +166,7 @@ func (d Date) NextDayOf(v int) *Date {
 }
 
 func (d Date) NextWeekOf(v int) *Date {
-	return d.NextDayOf(v * 7)
+	return d.NextDayOf(v * weekdays)
 }
 
 func (d Date) PrevDayOf(v int) *Date {

@@ -29,19 +29,12 @@ jobs:
           go version
           go env
 
-      - name: build
-        run: make build
-
-      - name: test
-        run: make test-with-coverage
-
-      - name: test-coverage-profile
-        run: make test-coverage-profile
+      - run: make build
+      - run: make test-with-coverage
+      - run: make test-coverage-profile
+      - run: make lint
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: lint
-        run: make lint

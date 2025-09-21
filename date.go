@@ -103,29 +103,6 @@ func (d Date) Match(other *Date) bool {
 	return d.Equal(other)
 }
 
-func (d Date) beforeAfter(other *Date, compare func(a, b int) bool, resultForSame bool) bool {
-	if other == nil {
-		return false
-	}
-	if compare(d.y, other.y) {
-		return true
-	}
-	if d.y != other.y {
-		return false
-	}
-	if compare(int(d.m), int(other.m)) {
-		return true
-	}
-	if d.m == other.m {
-		if compare(d.d, other.d) {
-			return true
-		} else if d.d == other.d {
-			return resultForSame
-		}
-	}
-	return false
-}
-
 func (d Date) After(other *Date) bool {
 	return d.beforeAfter(other, func(a, b int) bool {
 		return a > b
@@ -212,4 +189,27 @@ func (d Date) NextYearOf(v int) *Date {
 
 func (d Date) PrevYearOf(v int) *Date {
 	return d.NextYearOf(v * -1)
+}
+
+func (d Date) beforeAfter(other *Date, compare func(a, b int) bool, resultForSame bool) bool {
+	if other == nil {
+		return false
+	}
+	if compare(d.y, other.y) {
+		return true
+	}
+	if d.y != other.y {
+		return false
+	}
+	if compare(int(d.m), int(other.m)) {
+		return true
+	}
+	if d.m == other.m {
+		if compare(d.d, other.d) {
+			return true
+		} else if d.d == other.d {
+			return resultForSame
+		}
+	}
+	return false
 }

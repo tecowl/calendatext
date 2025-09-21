@@ -3,12 +3,14 @@ linters:
   default: all
   disable:
     - gosmopolitan
+    - noinlineerr
     - nlreturn
     - nolintlint
     - testpackage
     - varnamelen
     - wrapcheck
     - wsl
+    - wsl_v5
   exclusions:
     generated: lax
     presets:

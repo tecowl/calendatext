@@ -63,5 +63,4 @@ func TestCalendarWithWeekday(t *testing.T) {
 		},
 		cal.Dates().Strings(),
 	)
-
 }

@@ -10,9 +10,10 @@ import (
 
 // RFC3339 full-date
 // See documents about RFC3339
-//    https://www.ietf.org/rfc/rfc3339.txt
-//    https://medium.com/easyread/understanding-about-rfc-3339-for-datetime-formatting-in-software-engineering-940aa5d5f68a
-//    https://wiki.suikawiki.org/n/RFC%203339の日付形式
+//
+//	https://www.ietf.org/rfc/rfc3339.txt
+//	https://medium.com/easyread/understanding-about-rfc-3339-for-datetime-formatting-in-software-engineering-940aa5d5f68a
+//	https://wiki.suikawiki.org/n/RFC%203339の日付形式
 const DateFormat = "2006-01-02"
 
 type Date struct {

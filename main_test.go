@@ -1,9 +1,10 @@
 package calendatext_test
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/tecowl/calendatext"
-	"testing"
 )
 
 func TestCalendar(t *testing.T) {
@@ -76,5 +77,4 @@ func TestCalendar(t *testing.T) {
 		},
 		cal.Dates().Strings(),
 	)
-
 }

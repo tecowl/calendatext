@@ -45,5 +45,4 @@ func TestCalendarWithMonthlyDay(t *testing.T) {
 		},
 		cal.Dates().Strings(),
 	)
-
 }

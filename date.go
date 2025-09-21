@@ -1,11 +1,11 @@
 package calendatext
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // RFC3339 full-date
@@ -27,16 +27,21 @@ func Today() *Date {
 	return NewDate(t.Year(), t.Month(), t.Day())
 }
 
+var (
+	ErrInvalidDateFormat    = errors.New("invalid date format")
+	ErrInvalidNumberForDate = errors.New("invalid number for date")
+)
+
 func ParseDateWith(str string, delimiter string) (*Date, error) {
 	parts := strings.SplitN(str, delimiter, 3) // nolint:mnd
 	if len(parts) < 3 {                        // nolint:mnd
-		return nil, errors.Errorf("Invalid Date format: %q", str)
+		return nil, fmt.Errorf("%w: %q", ErrInvalidDateFormat, str)
 	}
 	nums := make([]int, 3) // nolint:mnd
 	for idx, s := range parts {
 		v, err := strconv.Atoi(s)
 		if err != nil {
-			return nil, errors.Errorf("Invalid number for date: %q", str)
+			return nil, fmt.Errorf("%w: %q", ErrInvalidNumberForDate, str)
 		}
 		nums[idx] = v
 	}
@@ -88,9 +93,8 @@ func (d Date) MonthlyWeekNum() int {
 	q := d.Day() % weekdays
 	if q == 0 {
 		return r
-	} else {
-		return r + 1
 	}
+	return r + 1
 }
 
 var _ DateMatcher = (*Date)(nil) // assert Date implements DateMatcher

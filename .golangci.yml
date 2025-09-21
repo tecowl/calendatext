@@ -19,6 +19,7 @@ issues:
         - depguard
         - dupword
         - errcheck
+        - forcetypeassert
         - funlen
 linters-settings:
 #   cyclop:

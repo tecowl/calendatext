@@ -1,11 +1,11 @@
 package calendatext
 
 import (
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 type BuildMatcher func(s string) (DateMatcher, error)
@@ -44,12 +44,13 @@ func (tp *textParser) Run(s string) error {
 
 func (tp *textParser) parseLine(line string) (*Pattern, error) {
 	var enabled bool
-	if strings.HasPrefix(line, "+") {
+	switch {
+	case strings.HasPrefix(line, "+"):
 		enabled = true
-	} else if strings.HasPrefix(line, "-") {
+	case strings.HasPrefix(line, "-"):
 		enabled = false
-	} else {
-		return nil, errors.Errorf("Invalid first charactor. It must be '+' or '-': %q\n", line)
+	default:
+		return nil, fmt.Errorf("%w. It must be '+' or '-': %q", ErrInvalidFirstCharacter, line)
 	}
 
 	line = line[1:]
@@ -61,7 +62,7 @@ func (tp *textParser) parseLine(line string) (*Pattern, error) {
 
 	matcher, err := tp.parseMatcher(strings.TrimSpace(bodies[0]))
 	if err != nil {
-		return nil, errors.WithMessagef(err, "Failed to build matcher for %s", description)
+		return nil, fmt.Errorf("%w for %s: %w", ErrMatcherBuild, description, err)
 	}
 	return &Pattern{
 		Enabled:     enabled,
@@ -80,7 +81,7 @@ func (tp *textParser) parseMatcher(body string) (DateMatcher, error) { // nolint
 			return m, nil
 		}
 	}
-	return nil, errors.Errorf("No build function found for %q", body)
+	return nil, fmt.Errorf("%w for %q", ErrBuildFunctionNotFound, body)
 }
 
 var (
@@ -89,9 +90,15 @@ var (
 	weeklyRE         = regexp.MustCompile(`\A毎週`)
 	monthlyDayRE     = regexp.MustCompile(`\A毎月[^\d]*(\d+)日`)
 	monthlyWeekdayRE = regexp.MustCompile(`\A毎月.*第(\d)(.+)`)
+
+	ErrInvalidFirstCharacter = errors.New("invalid first character")
+	ErrSomethingWrongToParse = errors.New("something wrong to parse")
+	ErrPeriodSplit           = errors.New("failed to split string as Period")
+	ErrMatcherBuild          = errors.New("failed to build matcher")
+	ErrBuildFunctionNotFound = errors.New("no build function found")
 )
 
-func newMatcherBuilders(date *Date) []BuildMatcher {
+func newMatcherBuilders(date *Date) []BuildMatcher { // nolint:gocognit,cyclop,funlen
 	delimiter := "/"
 	contextualParser := NewContextualDateParser(delimiter, date)
 
@@ -127,7 +134,7 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 				return nil, nil
 			}
 			if len(m[0]) < 2 { // nolint:mnd
-				return nil, errors.Errorf("something wrong to parse %q", s)
+				return nil, fmt.Errorf("%w %q", ErrSomethingWrongToParse, s)
 			}
 			d, err := strconv.ParseInt(m[0][1], 10, 10)
 			if err != nil {
@@ -143,7 +150,7 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 				return nil, nil
 			}
 			if len(m[0]) < 3 { // nolint:mnd
-				return nil, errors.Errorf("something wrong to parse %q", s)
+				return nil, fmt.Errorf("%w %q", ErrSomethingWrongToParse, s)
 			}
 			n, err := strconv.Atoi(m[0][1])
 			if err != nil {
@@ -169,7 +176,7 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 			}
 			parts := strings.SplitN(s, "-", 2) // nolint:mnd
 			if len(parts) < 2 {                // nolint:mnd
-				return nil, errors.Errorf("Failed to split string as Period: %q", s)
+				return nil, fmt.Errorf("%w %q", ErrPeriodSplit, s)
 			}
 
 			st, err := contextualParser.Parse(strings.TrimSpace(parts[0]))

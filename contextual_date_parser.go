@@ -1,12 +1,12 @@
 package calendatext
 
 import (
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type ContextualDateParser struct {
@@ -25,7 +25,7 @@ func NewContextualDateParser(delimiterPattern string, d *Date) *ContextualDatePa
 	}
 }
 
-func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
+func (cp *ContextualDateParser) Parse(s string) (*Date, error) { // nolint:cyclop,funlen
 	parts := cp.delimiter.Split(strings.TrimSpace(s), 3) // nolint:mnd
 	var y, d int
 	var m time.Month
@@ -75,7 +75,7 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 			return nil, err
 		}
 	default:
-		return nil, errors.Errorf("Something wrong to parse %v (len: %d) as Date", parts, len(parts))
+		return nil, fmt.Errorf("%w: %v (len: %d)", ErrDateParse, parts, len(parts))
 	}
 
 	r := NewDate(y, m, d)
@@ -83,3 +83,5 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 
 	return r, nil
 }
+
+var ErrDateParse = errors.New("something wrong to parse date")

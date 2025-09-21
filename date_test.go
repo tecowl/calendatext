@@ -55,7 +55,7 @@ func TestCompare(t *testing.T) {
 	t.Run("compare with myself", func(t *testing.T) {
 		t.Parallel()
 		d := NewDate(2020, 8, 12)
-		assert.True(t, d.Equal(d))
+		assert.True(t, d.Equal(d.Clone()))
 		assert.True(t, d.BeforeEqual(d))
 		assert.True(t, d.AfterEqual(d))
 		assert.False(t, d.Before(d))

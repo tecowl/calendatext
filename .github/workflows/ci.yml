@@ -30,10 +30,11 @@ jobs:
           go env
 
       - run: make build
-      - run: make test-with-coverage
-      - run: make test-coverage-profile
+      - run: make test
       - run: make lint
 
+      - run: make test-with-coverage
+      - run: make test-coverage-profile
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:

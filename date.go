@@ -93,7 +93,8 @@ func (d Date) MonthlyWeekNum() int {
 	}
 }
 
-// Implement DateMatcher interface
+var _ DateMatcher = (*Date)(nil) // assert Date implements DateMatcher
+
 func (d Date) Match(other *Date) bool {
 	return d.Equal(other)
 }

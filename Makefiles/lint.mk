@@ -1,5 +1,5 @@
 GOLANGCI_LINT_CLI_VERSION?=latest
-GOLANGCI_LINT_CLI_MODULE=github.com/golangci/golangci-lint/cmd/golangci-lint
+GOLANGCI_LINT_CLI_MODULE=github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 GOLANGCI_LINT_CLI=$(GOBIN)/golangci-lint
 $(GOLANGCI_LINT_CLI):
 	$(MAKE) golangci-lint-cli-install

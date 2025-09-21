@@ -26,12 +26,12 @@ func NewContextualDateParser(delimiterPattern string, d *Date) *ContextualDatePa
 }
 
 func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
-	parts := cp.delimiter.Split(strings.TrimSpace(s), 3)
+	parts := cp.delimiter.Split(strings.TrimSpace(s), 3) // nolint:mnd
 	var y, d int
 	var m time.Month
 	var err error
 	switch len(parts) {
-	case 1:
+	case 1: // nolint:mnd
 		curr := cp.current
 		d, err = strconv.Atoi(parts[0])
 		if err != nil {
@@ -43,7 +43,7 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 			m = curr.Month()
 		}
 		y = curr.Year()
-	case 2:
+	case 2: // nolint:mnd
 		curr := cp.current
 		v, err := strconv.Atoi(parts[0])
 		if err != nil {
@@ -60,7 +60,7 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 		} else {
 			y = curr.Year()
 		}
-	case 3:
+	case 3: // nolint:mnd
 		y, err = strconv.Atoi(parts[0])
 		if err != nil {
 			return nil, err

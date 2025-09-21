@@ -53,9 +53,9 @@ func (tp *textParser) parseLine(line string) (*Pattern, error) {
 	}
 
 	line = line[1:]
-	bodies := strings.SplitN(line, ":", 2)
+	bodies := strings.SplitN(line, ":", 2) // nolint:mnd
 	description := ""
-	if len(bodies) == 2 {
+	if len(bodies) == 2 { // nolint:mnd
 		description = strings.TrimSpace(bodies[1])
 	}
 
@@ -126,7 +126,7 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 			if len(m) < 1 {
 				return nil, nil
 			}
-			if len(m[0]) < 2 {
+			if len(m[0]) < 2 { // nolint:mnd
 				return nil, errors.Errorf("something wrong to parse %q", s)
 			}
 			d, err := strconv.ParseInt(m[0][1], 10, 10)
@@ -142,7 +142,7 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 			if len(m) < 1 {
 				return nil, nil
 			}
-			if len(m[0]) < 3 {
+			if len(m[0]) < 3 { // nolint:mnd
 				return nil, errors.Errorf("something wrong to parse %q", s)
 			}
 			n, err := strconv.Atoi(m[0][1])
@@ -167,8 +167,8 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 			if !slashPeriodRE.MatchString(s) {
 				return nil, nil
 			}
-			parts := strings.SplitN(s, "-", 2)
-			if len(parts) < 2 {
+			parts := strings.SplitN(s, "-", 2) // nolint:mnd
+			if len(parts) < 2 {                // nolint:mnd
 				return nil, errors.Errorf("Failed to split string as Period: %q", s)
 			}
 

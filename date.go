@@ -28,11 +28,11 @@ func Today() *Date {
 }
 
 func ParseDateWith(str string, delimiter string) (*Date, error) {
-	parts := strings.SplitN(str, delimiter, 3)
-	if len(parts) < 3 {
+	parts := strings.SplitN(str, delimiter, 3) // nolint:mnd
+	if len(parts) < 3 {                        // nolint:mnd
 		return nil, errors.Errorf("Invalid Date format: %q", str)
 	}
-	nums := make([]int, 3)
+	nums := make([]int, 3) // nolint:mnd
 	for idx, s := range parts {
 		v, err := strconv.Atoi(s)
 		if err != nil {

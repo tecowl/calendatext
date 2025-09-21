@@ -12,10 +12,7 @@ include ./Makefiles/cov-integration.mk
 include ./Makefiles/metadata.mk
 
 .PHONY: test
-test: test-unit tests-test
-
-tests-%:
-	$(MAKE) -C tests $*
+test: test-unit
 
 # COVERAGE_GO_PACKAGES_CSV is used in Makefiles/cov-unit.mk
 COVERAGE_GO_PACKAGES_CSV=$(shell find . -type d | grep -v '.git' | grep -v tests | grep -v Makefiles | grep -v coverages | grep -v mysql | sed 's|^\.|github.com/tecowl/querybm|' | tr '\n' ',' | sed 's/,$$//')

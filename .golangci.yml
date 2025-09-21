@@ -1,18 +1,24 @@
 linters:
   enable-all: true
   disable:
+    - nlreturn
+    - nolintlint
     - tenv # The linter 'tenv' is deprecated (since v1.64.0) due to: Duplicate feature in another linter. Replaced by usetesting.
+    - testpackage
+    - varnamelen
+    - wrapcheck
+    - wsl
 
 issues:
 #   exclude-files:
 #     - example_test.go
-  # exclude-rules:
-  #   - path: _test\.go
-  #     linters:
-  #       - exhaustruct
-#         - err113
-        # - forcetypeassert
-        # - funlen
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - depguard
+        - dupword
+        - errcheck
+        - funlen
 linters-settings:
 #   cyclop:
 #     skip-tests: true

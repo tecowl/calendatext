@@ -24,6 +24,7 @@ func (c *Calendar) Dates() Dates {
 			}
 		}
 	})
+
 	return r
 }
 
@@ -33,5 +34,6 @@ func (c *Calendar) ParseText(s string) error {
 		return err
 	}
 	c.Patterns = parser.Patterns.Reverse()
+
 	return nil
 }

@@ -18,6 +18,7 @@ func NewContextualDateParser(delimiterPattern string, d *Date) *ContextualDatePa
 	if d == nil {
 		d = Today()
 	}
+
 	return &ContextualDateParser{
 		delimiter: regexp.MustCompile("[" + delimiterPattern + "]"),
 		current:   d,
@@ -34,7 +35,7 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 		curr := cp.current
 		d, err = strconv.Atoi(parts[0])
 		if err != nil {
-			return nil, err
+			return nil, err // nolint:wrapcheck
 		}
 		if d < curr.Day() {
 			m = curr.Month() + 1
@@ -46,12 +47,12 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 		curr := cp.current
 		v, err := strconv.Atoi(parts[0])
 		if err != nil {
-			return nil, err
+			return nil, err // nolint:wrapcheck
 		}
 		m = time.Month(v)
 		d, err = strconv.Atoi(parts[1])
 		if err != nil {
-			return nil, err
+			return nil, err // nolint:wrapcheck
 		}
 		tmpD := NewDate(curr.Year(), m, d)
 		if curr.After(tmpD) {
@@ -79,5 +80,6 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 
 	r := NewDate(y, m, d)
 	cp.current = r
+
 	return r, nil
 }

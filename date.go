@@ -104,15 +104,18 @@ func (d Date) beforeAfter(other *Date, compare func(a, b int) bool, resultForSam
 	}
 	if compare(d.y, other.y) {
 		return true
-	} else if d.y == other.y {
-		if compare(int(d.m), int(other.m)) {
+	}
+	if d.y != other.y {
+		return false
+	}
+	if compare(int(d.m), int(other.m)) {
+		return true
+	}
+	if d.m == other.m {
+		if compare(d.d, other.d) {
 			return true
-		} else if d.m == other.m {
-			if compare(d.d, other.d) {
-				return true
-			} else if d.d == other.d {
-				return resultForSame
-			}
+		} else if d.d == other.d {
+			return resultForSame
 		}
 	}
 	return false

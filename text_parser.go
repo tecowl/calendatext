@@ -131,7 +131,7 @@ func newMatcherBuilders(date *Date) []BuildMatcher {
 			}
 			d, err := strconv.ParseInt(m[0][1], 10, 10)
 			if err != nil {
-				return nil, err
+				return nil, err // nolint:wrapcheck
 			}
 			return MonthlyDay(d), nil
 		},

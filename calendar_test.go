@@ -4,9 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCalendarDays(t *testing.T) {
+	t.Parallel()
 
 	// ----- 2020-08 ------
 	// S  M  T  W  T  F  S
@@ -18,6 +20,7 @@ func TestCalendarDays(t *testing.T) {
 	// 30 31
 
 	t.Run("single date", func(t *testing.T) {
+		t.Parallel()
 		c := &Calendar{
 			Period:      NewPeriod(*NewDate(2020, 8, 1), *NewDate(2020, 8, 31)),
 			BaseEnabled: false,
@@ -55,6 +58,8 @@ func TestCalendarDays(t *testing.T) {
 }
 
 func TestCalendarParse(t *testing.T) {
+	t.Parallel()
+
 	texts := map[string]string{
 		"full-date": `
 + 平日 : 通常営業日
@@ -84,15 +89,12 @@ func TestCalendarParse(t *testing.T) {
 
 	for name, text := range texts {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			c := NewCalendar(*NewDate(2020, 8, 1), *NewDate(2020, 8, 31), false)
 			err := c.ParseText(text)
-			if !assert.NoError(t, err) {
-				return
-			}
+			require.NoError(t, err)
+			require.Len(t, c.Patterns, 4)
 
-			if !assert.Equal(t, 4, len(c.Patterns)) {
-				return
-			}
 			if assert.IsType(t, (*Date)(nil), c.Patterns[0].DateMatcher) {
 				i := c.Patterns[0]
 				m := i.DateMatcher.(*Date)

@@ -1,0 +1,20 @@
+linters:
+  enable-all: true
+  disable:
+    - tenv # The linter 'tenv' is deprecated (since v1.64.0) due to: Duplicate feature in another linter. Replaced by usetesting.
+
+issues:
+#   exclude-files:
+#     - example_test.go
+  # exclude-rules:
+  #   - path: _test\.go
+  #     linters:
+  #       - exhaustruct
+#         - err113
+        # - forcetypeassert
+        # - funlen
+linters-settings:
+#   cyclop:
+#     skip-tests: true
+  # lll:
+  #   line-length: 250

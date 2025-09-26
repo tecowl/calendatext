@@ -1,9 +1,9 @@
 package calendatext
 
 import (
+	"errors"
+	"fmt"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type Weekday time.Weekday
@@ -18,6 +18,8 @@ const (
 	Saturday  = Weekday(time.Saturday)
 )
 
+const weekdays = 7
+
 func (wd Weekday) Match(d *Date) bool {
 	if d == nil {
 		return false
@@ -25,7 +27,8 @@ func (wd Weekday) Match(d *Date) bool {
 	return time.Weekday(wd) == d.Time().Weekday()
 }
 
-var WeekdayNameMap = map[Weekday]rune{
+// See https://github.com/tecowl/calendatext/issues/5
+var WeekdayNameMap = map[Weekday]rune{ // nolint:gochecknoglobals
 	Sunday:    '日',
 	Monday:    '月',
 	Tuesday:   '火',
@@ -35,6 +38,8 @@ var WeekdayNameMap = map[Weekday]rune{
 	Saturday:  '土',
 }
 
+var ErrUnknownWeekdayName = errors.New("unknown weekday name")
+
 func ParseWeekdayName(s string) (*Weekday, error) {
 	c := ([]rune(s))[0]
 	for d, name := range WeekdayNameMap {
@@ -42,5 +47,5 @@ func ParseWeekdayName(s string) (*Weekday, error) {
 			return &d, nil
 		}
 	}
-	return nil, errors.Errorf("Unknown Weekday name %q", s)
+	return nil, fmt.Errorf("%w %q", ErrUnknownWeekdayName, s)
 }

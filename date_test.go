@@ -7,6 +7,7 @@ import (
 )
 
 func TestNewDate(t *testing.T) {
+	t.Parallel()
 	assert.Equal(t, "2019-11-30", NewDate(2020, 0, 0).String())
 	assert.Equal(t, "2020-08-01", NewDate(2020, 8, 1).String())
 	assert.Equal(t, "2019-03-01", NewDate(2019, 2, 29).String())
@@ -15,6 +16,7 @@ func TestNewDate(t *testing.T) {
 }
 
 func TestNextDay(t *testing.T) {
+	t.Parallel()
 	d := NewDate(2020, 8, 12)
 	assert.Equal(t, "2020-07-29", d.PrevWeekOf(2).String())
 	assert.Equal(t, "2020-08-05", d.PrevWeek().String())
@@ -28,6 +30,7 @@ func TestNextDay(t *testing.T) {
 }
 
 func TestNextMonth(t *testing.T) {
+	t.Parallel()
 	d := NewDate(2020, 8, 12)
 	assert.Equal(t, "2019-11-12", d.PrevMonthOf(9).String())
 	assert.Equal(t, "2019-12-12", d.PrevMonthOf(8).String())
@@ -39,6 +42,7 @@ func TestNextMonth(t *testing.T) {
 }
 
 func TestNextYear(t *testing.T) {
+	t.Parallel()
 	d := NewDate(2020, 8, 12)
 	assert.Equal(t, "2018-08-12", d.PrevYearOf(2).String())
 	assert.Equal(t, "2019-08-12", d.PrevYear().String())
@@ -47,9 +51,11 @@ func TestNextYear(t *testing.T) {
 }
 
 func TestCompare(t *testing.T) {
+	t.Parallel()
 	t.Run("compare with myself", func(t *testing.T) {
+		t.Parallel()
 		d := NewDate(2020, 8, 12)
-		assert.True(t, d.Equal(d))
+		assert.True(t, d.Equal(d.Clone()))
 		assert.True(t, d.BeforeEqual(d))
 		assert.True(t, d.AfterEqual(d))
 		assert.False(t, d.Before(d))
@@ -58,6 +64,7 @@ func TestCompare(t *testing.T) {
 
 	subTestForNext := func(d0, d1 *Date) func(t *testing.T) {
 		return func(t *testing.T) {
+			t.Helper()
 			assert.False(t, d0.Equal(d1))
 			assert.True(t, d0.BeforeEqual(d1))
 			assert.True(t, d0.Before(d1))
@@ -68,6 +75,7 @@ func TestCompare(t *testing.T) {
 
 	subTestForPrev := func(d0, d1 *Date) func(t *testing.T) {
 		return func(t *testing.T) {
+			t.Helper()
 			assert.False(t, d0.Equal(d1))
 			assert.False(t, d0.BeforeEqual(d1))
 			assert.False(t, d0.Before(d1))
@@ -77,15 +85,16 @@ func TestCompare(t *testing.T) {
 	}
 
 	d := NewDate(2020, 8, 12)
-	t.Run("compare with next day", subTestForNext(d, d.NextDay()))
-	t.Run("compare with next month", subTestForNext(d, d.NextMonth()))
-	t.Run("compare with next year", subTestForNext(d, d.NextYear()))
-	t.Run("compare with prev day", subTestForPrev(d, d.PrevDay()))
-	t.Run("compare with prev month", subTestForPrev(d, d.PrevMonth()))
-	t.Run("compare with prev year", subTestForPrev(d, d.PrevYear()))
+	t.Run("compare with next day", subTestForNext(d, d.NextDay()))     // nolint:paralleltest
+	t.Run("compare with next month", subTestForNext(d, d.NextMonth())) // nolint:paralleltest
+	t.Run("compare with next year", subTestForNext(d, d.NextYear()))   // nolint:paralleltest
+	t.Run("compare with prev day", subTestForPrev(d, d.PrevDay()))     // nolint:paralleltest
+	t.Run("compare with prev month", subTestForPrev(d, d.PrevMonth())) // nolint:paralleltest
+	t.Run("compare with prev year", subTestForPrev(d, d.PrevYear()))   // nolint:paralleltest
 }
 
 func TestDateMonthlyWeekNum(t *testing.T) {
+	t.Parallel()
 	// ----- 2020-08 ------
 	// S  M  T  W  T  F  S
 	//                    1

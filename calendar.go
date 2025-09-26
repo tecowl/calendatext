@@ -7,7 +7,7 @@ type Calendar struct {
 }
 
 func NewCalendar(start, end Date, baseEnabled bool) *Calendar {
-	return &Calendar{Period: NewPeriod(start, end), BaseEnabled: baseEnabled}
+	return &Calendar{Period: NewPeriod(start, end), BaseEnabled: baseEnabled, Patterns: Patterns{}}
 }
 
 func (c *Calendar) Dates() Dates {

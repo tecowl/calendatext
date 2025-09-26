@@ -16,8 +16,9 @@ func (pd *Period) Include(d *Date) bool {
 	return pd.Start.BeforeEqual(d) && pd.End.AfterEqual(d)
 }
 
-// Implement DateMatcher interface
-func (pd Period) Match(other *Date) bool {
+var _ DateMatcher = (*Period)(nil) // assert Period implements DateMatcher
+
+func (pd *Period) Match(other *Date) bool {
 	return pd.Include(other)
 }
 

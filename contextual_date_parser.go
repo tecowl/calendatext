@@ -1,12 +1,12 @@
 package calendatext
 
 import (
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type ContextualDateParser struct {
@@ -18,23 +18,24 @@ func NewContextualDateParser(delimiterPattern string, d *Date) *ContextualDatePa
 	if d == nil {
 		d = Today()
 	}
+
 	return &ContextualDateParser{
 		delimiter: regexp.MustCompile("[" + delimiterPattern + "]"),
 		current:   d,
 	}
 }
 
-func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
-	parts := cp.delimiter.Split(strings.TrimSpace(s), 3)
+func (cp *ContextualDateParser) Parse(s string) (*Date, error) { // nolint:cyclop,funlen
+	parts := cp.delimiter.Split(strings.TrimSpace(s), 3) // nolint:mnd
 	var y, d int
 	var m time.Month
 	var err error
 	switch len(parts) {
-	case 1:
+	case 1: // nolint:mnd
 		curr := cp.current
 		d, err = strconv.Atoi(parts[0])
 		if err != nil {
-			return nil, err
+			return nil, err // nolint:wrapcheck
 		}
 		if d < curr.Day() {
 			m = curr.Month() + 1
@@ -42,16 +43,16 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 			m = curr.Month()
 		}
 		y = curr.Year()
-	case 2:
+	case 2: // nolint:mnd
 		curr := cp.current
 		v, err := strconv.Atoi(parts[0])
 		if err != nil {
-			return nil, err
+			return nil, err // nolint:wrapcheck
 		}
 		m = time.Month(v)
 		d, err = strconv.Atoi(parts[1])
 		if err != nil {
-			return nil, err
+			return nil, err // nolint:wrapcheck
 		}
 		tmpD := NewDate(curr.Year(), m, d)
 		if curr.After(tmpD) {
@@ -59,7 +60,7 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 		} else {
 			y = curr.Year()
 		}
-	case 3:
+	case 3: // nolint:mnd
 		y, err = strconv.Atoi(parts[0])
 		if err != nil {
 			return nil, err
@@ -74,10 +75,13 @@ func (cp *ContextualDateParser) Parse(s string) (*Date, error) {
 			return nil, err
 		}
 	default:
-		return nil, errors.Errorf("Something wrong to parse %v (len: %d) as Date", parts, len(parts))
+		return nil, fmt.Errorf("%w: %v (len: %d)", ErrDateParse, parts, len(parts))
 	}
 
 	r := NewDate(y, m, d)
 	cp.current = r
+
 	return r, nil
 }
+
+var ErrDateParse = errors.New("something wrong to parse date")

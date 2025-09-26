@@ -8,6 +8,7 @@ import (
 )
 
 func TestCalendarWithMonthlyDay(t *testing.T) {
+	t.Parallel()
 
 	// ----- 2020-12 ------  ----- 2021-01 ------
 	//  S  M  T  W  T  F  S    S  M  T  W  T  F  S
@@ -45,5 +46,4 @@ func TestCalendarWithMonthlyDay(t *testing.T) {
 		},
 		cal.Dates().Strings(),
 	)
-
 }

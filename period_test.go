@@ -7,7 +7,9 @@ import (
 )
 
 func TestPeriodInclude(t *testing.T) {
+	t.Parallel()
 	t.Run("single date", func(t *testing.T) {
+		t.Parallel()
 		d := NewDate(2020, 8, 6)
 		pd := NewPeriod(*d, *d)
 		assert.False(t, pd.Include(d.PrevYear()))
@@ -22,6 +24,7 @@ func TestPeriodInclude(t *testing.T) {
 	})
 
 	t.Run("normal", func(t *testing.T) {
+		t.Parallel()
 		d1 := NewDate(2020, 8, 6)
 		d2 := NewDate(2020, 8, 20)
 		pd := NewPeriod(*d1, *d2)

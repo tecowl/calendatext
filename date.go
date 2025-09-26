@@ -1,18 +1,19 @@
 package calendatext
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // RFC3339 full-date
 // See documents about RFC3339
-//    https://www.ietf.org/rfc/rfc3339.txt
-//    https://medium.com/easyread/understanding-about-rfc-3339-for-datetime-formatting-in-software-engineering-940aa5d5f68a
-//    https://wiki.suikawiki.org/n/RFC%203339の日付形式
+//
+//	https://www.ietf.org/rfc/rfc3339.txt
+//	https://medium.com/easyread/understanding-about-rfc-3339-for-datetime-formatting-in-software-engineering-940aa5d5f68a
+//	https://wiki.suikawiki.org/n/RFC%203339の日付形式
 const DateFormat = "2006-01-02"
 
 type Date struct {
@@ -26,16 +27,21 @@ func Today() *Date {
 	return NewDate(t.Year(), t.Month(), t.Day())
 }
 
+var (
+	ErrInvalidDateFormat    = errors.New("invalid date format")
+	ErrInvalidNumberForDate = errors.New("invalid number for date")
+)
+
 func ParseDateWith(str string, delimiter string) (*Date, error) {
-	parts := strings.SplitN(str, delimiter, 3)
-	if len(parts) < 3 {
-		return nil, errors.Errorf("Invalid Date format: %q", str)
+	parts := strings.SplitN(str, delimiter, 3) // nolint:mnd
+	if len(parts) < 3 {                        // nolint:mnd
+		return nil, fmt.Errorf("%w: %q", ErrInvalidDateFormat, str)
 	}
-	nums := make([]int, 3)
+	nums := make([]int, 3) // nolint:mnd
 	for idx, s := range parts {
 		v, err := strconv.Atoi(s)
 		if err != nil {
-			return nil, errors.Errorf("Invalid number for date: %q", str)
+			return nil, fmt.Errorf("%w: %q", ErrInvalidNumberForDate, str)
 		}
 		nums[idx] = v
 	}
@@ -83,38 +89,18 @@ func (d Date) Weekday() Weekday {
 }
 
 func (d Date) MonthlyWeekNum() int {
-	r := d.Day() / 7
-	q := d.Day() % 7
+	r := d.Day() / weekdays
+	q := d.Day() % weekdays
 	if q == 0 {
 		return r
-	} else {
-		return r + 1
 	}
+	return r + 1
 }
 
-// Implement DateMatcher interface
+var _ DateMatcher = (*Date)(nil) // assert Date implements DateMatcher
+
 func (d Date) Match(other *Date) bool {
 	return d.Equal(other)
-}
-
-func (d Date) beforeAfter(other *Date, compare func(a, b int) bool, resultForSame bool) bool {
-	if other == nil {
-		return false
-	}
-	if compare(d.y, other.y) {
-		return true
-	} else if d.y == other.y {
-		if compare(int(d.m), int(other.m)) {
-			return true
-		} else if d.m == other.m {
-			if compare(d.d, other.d) {
-				return true
-			} else if d.d == other.d {
-				return resultForSame
-			}
-		}
-	}
-	return false
 }
 
 func (d Date) After(other *Date) bool {
@@ -162,7 +148,7 @@ func (d Date) NextDayOf(v int) *Date {
 }
 
 func (d Date) NextWeekOf(v int) *Date {
-	return d.NextDayOf(v * 7)
+	return d.NextDayOf(v * weekdays)
 }
 
 func (d Date) PrevDayOf(v int) *Date {
@@ -203,4 +189,27 @@ func (d Date) NextYearOf(v int) *Date {
 
 func (d Date) PrevYearOf(v int) *Date {
 	return d.NextYearOf(v * -1)
+}
+
+func (d Date) beforeAfter(other *Date, compare func(a, b int) bool, resultForSame bool) bool {
+	if other == nil {
+		return false
+	}
+	if compare(d.y, other.y) {
+		return true
+	}
+	if d.y != other.y {
+		return false
+	}
+	if compare(int(d.m), int(other.m)) {
+		return true
+	}
+	if d.m == other.m {
+		if compare(d.d, other.d) {
+			return true
+		} else if d.d == other.d {
+			return resultForSame
+		}
+	}
+	return false
 }
